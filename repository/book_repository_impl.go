@@ -19,11 +19,20 @@ func (repository *BookRepositoryImpl) Save(ctx context.Context, db *gorm.DB, boo
 	return book, nil
 }
 
-func (repository *BookRepositoryImpl) FindAll(ctx context.Context, db *gorm.DB, book domain.Book) []domain.Book {
-	err := db.WithContext(ctx).Find(&book).Error
+func (repository *BookRepositoryImpl) FindAll(ctx context.Context, db *gorm.DB) ([]domain.Book, error) {
+	var books []domain.Book
+	err := db.WithContext(ctx).Find(&books).Error
 	if err != nil {
-		return []domain.Book{}
+		return nil, err
 	}
+	return books, nil
+}
 
-	return []domain.Book{book}
+func (repository *BookRepositoryImpl) FindById(ctx context.Context, db *gorm.DB, bookId uint) (domain.Book, error) {
+	var book domain.Book
+	err := db.WithContext(ctx).First(&book, bookId).Error
+	if err != nil {
+		return book, err
+	}
+	return book, nil
 }
